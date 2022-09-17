@@ -23,4 +23,4 @@ class Tasks(models.Model):
     comments = models.CharField(max_length=100)
     picture_url = models.CharField(max_length=100)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default="TODO")
-    subpages = models.OneToOneField(Subpages, on_delete=models.CASCADE)
+    subpages = models.ForeignKey(Subpages, on_delete=models.CASCADE)

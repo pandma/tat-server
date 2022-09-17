@@ -4,6 +4,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from .models import Subpages
 from ..Pages.views import Relate_pages
+from rest_framework import generics
 import json
 
 
@@ -45,7 +46,6 @@ class Subpages_views(View):
             page.small_image = jd["small_image"]
             page.save()
             updated_page = self.get_by_id(query)
-
             res = {"message": "Success", "data": updated_page}
         else:
             res = {"message": "data not found"}
@@ -65,6 +65,38 @@ class Subpages_views(View):
         page = Subpages.objects.get(id=id)
         page.delete()
         return
+
+
+class One_subpage_view(generics.ListAPIView):
+    def get(self, request):
+        id = self.request.GET.get("id", None)
+        if id:
+            try:
+                data = list(Subpages.objects.filter(id=id).values())[0]
+                res = {"message": "Success", "data": data}
+            except:
+                res = {"message": "data not found"}
+        else:
+            res = {"message": "data not found"}
+        return JsonResponse(res)
+
+
+class find_by_page_id_view(generics.ListAPIView):
+    def get(self, request):
+        id = self.request.GET.get("id", None)
+        if id:
+            try:
+                data = self.find_by_id(id)
+                print(data)
+                res = {"message": "Success", "data": data}
+            except:
+                res = {"message": "data not found"}
+        else:
+            res = {"message": "data not found"}
+        return JsonResponse(res)
+
+    def find_by_id(seld, id):
+        return list(Subpages.objects.filter(pages_id=id).values())
 
 
 class Relate_subpages:

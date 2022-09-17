@@ -75,7 +75,10 @@ class One_page_views(generics.ListAPIView):
         if id:
             try:
                 data = list(Pages.objects.filter(id=id).values())[0]
-                res = {"message": "Success", "data": data}
+                res = {
+                    "message": "Success",
+                    "data": data,
+                }
             except:
                 res = {"message": "data not found"}
         else:
