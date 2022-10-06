@@ -4,6 +4,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from .models import Tasks
 from ..Subpages.views import Relate_subpages
+from rest_framework import generics
 import json
 
 
@@ -21,16 +22,17 @@ class Tasks_views(View):
         return JsonResponse(res)
 
     def post(self, request):
-        jd = json.loads((request.body))
+        jd = json.loads(request.body)
         subpage_id = jd["subpage_id"]
         subpage = Relate_subpages.find_page(self, subpage_id)
         Tasks.objects.create(
             title=jd["title"],
             type=jd["type"],
+            text=jd["text"],
             comments=jd["comments"],
             picture_url=jd["picture_url"],
             status=jd["status"],
-            subpage=subpage,
+            subpages=subpage,
         )
         res = {"message": "Success"}
         return JsonResponse(res)
@@ -48,7 +50,6 @@ class Tasks_views(View):
             page.status = (jd["status"],)
             page.save()
             updated_task = self.get_by_id(query)
-
             res = {"message": "Success", "data": updated_task}
         else:
             res = {"message": "data not found"}
@@ -68,3 +69,35 @@ class Tasks_views(View):
         page = Tasks.objects.get(id=id)
         page.delete()
         return
+
+
+class One_task_view(generics.ListAPIView):
+    def get(self, request):
+        id = self.request.GET.get("id", None)
+        if id:
+            try:
+                data = list(Tasks.objects.filter(id=id).values())[0]
+                res = {"message": "Success", "data": data}
+            except:
+                res = {"message": "data not found"}
+        else:
+            res = {"message": "data not found"}
+        return JsonResponse(res)
+
+
+class Find_by_subpage_id_view(generics.ListAPIView):
+    def get(self, request):
+        id = self.request.GET.get("id", None)
+        if id:
+            try:
+                data = self.find_by_id(id)
+                print(data)
+                res = {"message": "Success", "data": data}
+            except:
+                res = {"message": "data not found"}
+        else:
+            res = {"message": "data not found"}
+        return JsonResponse(res)
+
+    def find_by_id(seld, id):
+        return list(Tasks.objects.filter(subpages_id=id).values())

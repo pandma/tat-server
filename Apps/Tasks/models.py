@@ -1,4 +1,3 @@
-from tokenize import Comment
 from django.db import models
 from ..Subpages.models import Subpages
 
@@ -18,9 +17,9 @@ class Tasks(models.Model):
     )
 
     title = models.CharField(max_length=100)
-    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     text = models.CharField(max_length=100)
     comments = models.CharField(max_length=100)
     picture_url = models.CharField(max_length=100)
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default="TODO")
+    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default="TODO")
     subpages = models.ForeignKey(Subpages, on_delete=models.CASCADE)
